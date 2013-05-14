@@ -171,7 +171,9 @@ public abstract class AllocationRow {
 
     public static void loadDataFromLast(List<? extends AllocationRow> rows,
             List<? extends AllocationModification> modifications) {
-        Validate.isTrue(rows.size() == modifications.size());
+        // It's neccesary to workaround this validation, if we will be using
+        // several occurrences per AllocationRow
+        // Validate.isTrue(rows.size() == modifications.size());
         Iterator<? extends AllocationModification> iterator = modifications
                 .iterator();
         for (AllocationRow each : rows) {
@@ -194,8 +196,16 @@ public abstract class AllocationRow {
                     .toResourcesPerDayModification(task);
             result.add(modification);
             each.setTemporal(modification.getBeingModified());
+
+            // Creating ResourcesPerDay for reccurrence appliance
+            ResourcesPerDayModification repetition = each
+                    .toResourcesPerDayModification(task);
+            result.add(repetition);
+            each.repetition = repetition.getBeingModified();
         }
         setCustomAssignedEffortForResource(rows, requestedToRemove);
+        // now N ResourcesPerDayModification per AllocationRows
+        // are being returned
         return result;
     }
 
@@ -273,7 +283,9 @@ public abstract class AllocationRow {
         for (AllocationRow each : rows) {
             Validate.notNull(each.temporal);
             if (each.origin == null) {
+                // Adding ResourceAllocation and repetitions
                 result.add(each.temporal);
+                result.add(each.repetition);
             }
         }
         return result;
@@ -317,6 +329,7 @@ public abstract class AllocationRow {
     private CalculatedValue currentCalculatedValue;
 
     private ResourceAllocation<?> temporal;
+    private ResourceAllocation<?> repetition;
 
     private String name;
 

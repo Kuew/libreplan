@@ -82,6 +82,7 @@ public class AllocationRowsHandler {
         List<Resource> alreadyPresent = new ArrayList<Resource>();
         for (Resource each : resource) {
             if (alreadyExistsAllocationFor(each)) {
+                // WIP: Modified function to allow repetitions on SpecificAllocationRow
                 alreadyPresent.add(each);
             } else {
                 SpecificAllocationRow specificAllocationRow = SpecificAllocationRow
@@ -184,7 +185,8 @@ public class AllocationRowsHandler {
     }
 
     private boolean alreadyExistsAllocationFor(Resource resource) {
-        return !getAllocationsFor(resource).isEmpty();
+		// FIXME temporary workaround
+        return false && !getAllocationsFor(resource).isEmpty();
     }
 
     private boolean alreadyExistsAllocationFor(ResourceEnum resourceType,
@@ -250,12 +252,19 @@ public class AllocationRowsHandler {
         checkInvalidValues();
         if (!currentRows.isEmpty()) {
             List<? extends AllocationModification> modificationsDone;
+            // This is where the assignments are to be really created
+            // I'd need N modifications for each "row".
             modificationsDone = doSuitableAllocation();
 
             AllocationRow.loadDataFromLast(currentRows, modificationsDone);
 
             createDerived();
             AllocationResult result = createResult();
+
+            // FIXME : Trying to create new recurring occurrence
+            // AllocationResult recurring = createResult();
+            // result.getSpecificAllocations().iterator().next().getStartDate();
+
             if (AllocationModification.allFullfiled(AllocationModification
                     .ofType(EffortModification.class, modificationsDone))) {
                 return Flagged.justValue(result);
@@ -279,6 +288,7 @@ public class AllocationRowsHandler {
             allocationModifications = calculateNumberOfHoursAllocation();
             break;
         case END_DATE:
+            // This is the default type
             allocationModifications = calculateEndDateOrStartDateAllocation();
             break;
         case RESOURCES_PER_DAY:
@@ -313,6 +323,8 @@ public class AllocationRowsHandler {
     private List<ResourcesPerDayModification> calculateEndDateOrStartDateAllocation() {
         List<ResourcesPerDayModification> allocations = AllocationRow
                 .createAndAssociate(task, currentRows, requestedToRemove);
+        // Here the modifications are created, but they don't have yet
+        // assignmentsState intraDayEnd or intraDayStart, nor assignments.
         ResourceAllocation.allocating(allocations).untilAllocating(
                 task.getAllocationDirection(),
                 formBinder.getAssignedEffort(),
