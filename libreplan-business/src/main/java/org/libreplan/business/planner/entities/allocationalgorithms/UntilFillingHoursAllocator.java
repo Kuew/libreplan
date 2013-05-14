@@ -72,8 +72,19 @@ public abstract class UntilFillingHoursAllocator {
     }
 
     public IntraDayDate untilAllocating(EffortDuration effortToAllocate) {
-        final IntraDayDate dateFromWhichToAllocate = direction
+        return untilAllocating(effortToAllocate, 0);
+    }
+
+    public IntraDayDate untilAllocating(EffortDuration effortToAllocate,
+            int repetition) {
+        IntraDayDate dateFromWhichToAllocate = direction
                 .getDateFromWhichToAllocate(task);
+
+        // hack to increment start date
+        for (int i = 0; i < repetition; i++) {
+            dateFromWhichToAllocate = dateFromWhichToAllocate.nextDayAtStart();
+        }
+
         List<EffortPerAllocation> effortPerAllocation = effortPerAllocation(
                 dateFromWhichToAllocate, effortToAllocate);
         if (effortPerAllocation.isEmpty()) {
