@@ -66,6 +66,7 @@ import org.libreplan.business.workingday.ResourcesPerDay;
 import org.libreplan.web.common.EffortDurationBox;
 import org.libreplan.web.common.LenientDecimalBox;
 import org.libreplan.web.common.Util;
+import org.libreplan.web.common.components.NewAllocationSelector;
 import org.libreplan.web.planner.allocation.ResourceAllocationController.DerivedAllocationColumn;
 import org.zkoss.zk.au.out.AuWrongValue;
 import org.zkoss.zk.ui.Component;
@@ -197,11 +198,14 @@ public abstract class AllocationRow {
             result.add(modification);
             each.setTemporal(modification.getBeingModified());
 
-            // Creating ResourcesPerDay for reccurrence appliance
-            ResourcesPerDayModification repetition = each
-                    .toResourcesPerDayModification(task);
-            result.add(repetition);
-            each.repetition = repetition.getBeingModified();
+            int repetitions = 5;
+            // Creating N ResourcesPerDay for reccurrence appliance
+            for (int i = 0; i < repetitions; i++) {
+                ResourcesPerDayModification repetition = each
+                        .toResourcesPerDayModification(task);
+                result.add(repetition);
+                each.repetitionsList.add(repetition.getBeingModified());
+            }
         }
         setCustomAssignedEffortForResource(rows, requestedToRemove);
         // now N ResourcesPerDayModification per AllocationRows
@@ -285,7 +289,7 @@ public abstract class AllocationRow {
             if (each.origin == null) {
                 // Adding ResourceAllocation and repetitions
                 result.add(each.temporal);
-                result.add(each.repetition);
+                result.addAll(each.repetitionsList);
             }
         }
         return result;
@@ -329,7 +333,7 @@ public abstract class AllocationRow {
     private CalculatedValue currentCalculatedValue;
 
     private ResourceAllocation<?> temporal;
-    private ResourceAllocation<?> repetition;
+    private ArrayList<ResourceAllocation<?>> repetitionsList = new ArrayList<ResourceAllocation<?>>();
 
     private String name;
 
