@@ -420,7 +420,7 @@ public abstract class ResourceAllocation<T extends DayAssignment> extends
                     receiver.cantFulfill(allocationAttempt, capacityResult);
                 }
 
-            };
+            };// Watch this intradate
             IntraDayDate result = allocator.untilAllocating(toAllocate);
             if (result == null) {
                 // allocation could not be done
@@ -758,9 +758,17 @@ public abstract class ResourceAllocation<T extends DayAssignment> extends
         public final void allocate(ResourcesPerDay resourcesPerDay) {
             Task currentTask = getTask();
             AllocateResourcesPerDayOnInterval allocator = new AllocateResourcesPerDayOnInterval(
-                    currentTask.getIntraDayStartDate(),
+                    getCalculatedIntraDayStartDate(currentTask),
                     currentTask.getIntraDayEndDate());
             allocator.allocate(resourcesPerDay);
+        }
+
+        private IntraDayDate getCalculatedIntraDayStartDate(Task currentTask) {
+            IntraDayDate result = currentTask.getIntraDayStartDate();
+            for (int i = 0; i < getRecurrenceAppliance(); i++) {
+                result = result.nextDayAtStart();
+            }
+            return result;
         }
 
         private List<T> createAssignments(ResourcesPerDay resourcesPerDay,

@@ -38,6 +38,7 @@ import org.libreplan.business.planner.entities.AssignmentFunction;
 import org.libreplan.business.planner.entities.CalculatedValue;
 import org.libreplan.business.planner.entities.DerivedAllocationGenerator.IWorkerFinder;
 import org.libreplan.business.planner.entities.ResourceAllocation;
+import org.libreplan.business.planner.entities.ResourceAllocation.AllocationsSpecified;
 import org.libreplan.business.planner.entities.ResourceAllocation.AllocationsSpecified.INotFulfilledReceiver;
 import org.libreplan.business.planner.entities.ResourceAllocation.Direction;
 import org.libreplan.business.planner.entities.Task;
@@ -323,12 +324,16 @@ public class AllocationRowsHandler {
     private List<ResourcesPerDayModification> calculateEndDateOrStartDateAllocation() {
         List<ResourcesPerDayModification> allocations = AllocationRow
                 .createAndAssociate(task, currentRows, requestedToRemove);
-        // Here the modifications are created, but they don't have yet
+        // Here the modifications are already created, but they don't have yet
         // assignmentsState intraDayEnd or intraDayStart, nor assignments.
-        ResourceAllocation.allocating(allocations).untilAllocating(
-                task.getAllocationDirection(),
-                formBinder.getAssignedEffort(),
-                notFullfiledReceiver());
+        AllocationsSpecified alloc = ResourceAllocation.allocating(allocations);
+
+        Direction allocDir = task.getAllocationDirection();
+        EffortDuration assignedEff = formBinder.getAssignedEffort();
+        INotFulfilledReceiver nfReceiver = notFullfiledReceiver();
+
+        alloc.untilAllocating(allocDir, assignedEff, nfReceiver);
+
         return allocations;
     }
 

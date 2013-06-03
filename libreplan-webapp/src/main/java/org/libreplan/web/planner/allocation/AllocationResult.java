@@ -49,7 +49,7 @@ public class AllocationResult {
             CalculatedValue calculatedValue, List<AllocationRow> rows,
             Integer newWorkableDays) {
         List<ResourceAllocation<?>> newAllocations = AllocationRow
-                .getNewFrom(rows);
+                .getNewFrom(rows);// This is creating the elements!!
         List<ModifiedAllocation> modified = AllocationRow.getModifiedFrom(rows);
         return new AllocationResult(task, newWorkableDays, calculatedValue,
                 createAggregate(newAllocations, modified), newAllocations,

@@ -121,6 +121,13 @@ public class SpecificAllocationRow extends AllocationRow {
                 getResourcesPerDayEditedValue());
     }
 
+    @Override
+    public ResourcesPerDayModification toResourcesPerDayModification(Task task,
+            int repetition) {
+        return ResourcesPerDayModification.create(createSpecific(task),
+                getResourcesPerDayEditedValue());
+    }
+
     private SpecificResourceAllocation createSpecific(Task task) {
         SpecificResourceAllocation specific = SpecificResourceAllocation
                 .create(task);

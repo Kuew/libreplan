@@ -52,6 +52,8 @@ public abstract class UntilFillingHoursAllocator {
 
     private final Task task;
 
+    private int repetition = 0;
+
     private List<ResourcesPerDayModification> allocations;
 
     private Map<ResourcesPerDayModification, List<DayAssignment>> resultAssignments = new HashMap<ResourcesPerDayModification, List<DayAssignment>>();
@@ -72,7 +74,9 @@ public abstract class UntilFillingHoursAllocator {
     }
 
     public IntraDayDate untilAllocating(EffortDuration effortToAllocate) {
-        return untilAllocating(effortToAllocate, 0);
+	// Ugly test to check repetition
+        repetition += repetition;
+        return untilAllocating(effortToAllocate, repetition);
     }
 
     public IntraDayDate untilAllocating(EffortDuration effortToAllocate,
