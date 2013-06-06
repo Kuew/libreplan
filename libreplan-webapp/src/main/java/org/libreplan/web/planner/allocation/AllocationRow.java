@@ -103,8 +103,6 @@ public abstract class AllocationRow {
 
     private static final Log LOG = LogFactory.getLog(AllocationRow.class);
 
-    private static int CONSTANT_REPETITIONS = 2;
-
     public static EffortDuration sumAllConsolidatedEffort(
             Collection<? extends AllocationRow> rows) {
         return EffortDuration.sum(rows, new IEffortFrom<AllocationRow>() {
@@ -201,8 +199,10 @@ public abstract class AllocationRow {
             each.setTemporal(modification.getBeingModified());
             setCustomAssignedEffortForResource(rows, requestedToRemove);
 
-            // Creating CONSTANT_REPETITIONS ResourcesPerDay
-            for (int i = 0; i < CONSTANT_REPETITIONS; i++) {
+            int repetitions = Math.max(task.getRecurrenceInformation()
+                    .getRepetitions(), 1);
+
+            for (int i = 1; i < repetitions; i++) {
                 ResourcesPerDayModification repetition = each
                         .toResourcesPerDayModification(task, i);
                 repetition.getBeingModified().setRecurrenceAppliance(i);
