@@ -274,12 +274,15 @@ public class ResourceAllocationModel implements IResourceAllocationModel {
     private void loadDerivedAllocations(
             Set<ResourceAllocation<?>> resourceAllocations) {
         for (ResourceAllocation<?> each : resourceAllocations) {
-            for (DerivedAllocation eachDerived : each.getDerivedAllocations()) {
-                Hibernate.initialize(eachDerived);
-                eachDerived.getAssignments();
-                eachDerived.getAlpha();
-                eachDerived.getName();
-            }
+            if ((each.getRecurrenceAppliance() != null)
+                    && (each.getRecurrenceAppliance() < 1))
+                for (DerivedAllocation eachDerived : each
+                        .getDerivedAllocations()) {
+                    Hibernate.initialize(eachDerived);
+                    eachDerived.getAssignments();
+                    eachDerived.getAlpha();
+                    eachDerived.getName();
+                }
         }
     }
 
