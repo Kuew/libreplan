@@ -42,7 +42,9 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.validator.NotNull;
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.libreplan.business.calendars.entities.AvailabilityTimeLine;
 import org.libreplan.business.calendars.entities.BaseCalendar;
 import org.libreplan.business.calendars.entities.Capacity;
@@ -787,6 +789,18 @@ public abstract class ResourceAllocation<T extends DayAssignment> extends
         public IAllocateResourcesPerDay resourcesPerDayUntil(IntraDayDate end) {
             IntraDayDate startInclusive = getStartSpecifiedByTask();
             return new AllocateResourcesPerDayOnInterval(startInclusive, end);
+        }
+
+        // FIXME: A method like this could be called to have different
+        // startDates
+        public IAllocateResourcesPerDay resourcesPerDayUntil(IntraDayDate end,
+                Period period, int repetition) {
+            IntraDayDate start = getStartSpecifiedByTask();
+            LocalDate allocationStart = start.getDate();
+            for (int i = 0; i < repetition; i++) {
+                allocationStart = start.getDate().plus(period);
+            }
+            return new AllocateResourcesPerDayOnInterval(start, end);
         }
 
         @Override
