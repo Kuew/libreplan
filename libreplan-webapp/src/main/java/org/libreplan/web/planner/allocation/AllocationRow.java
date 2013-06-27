@@ -199,8 +199,11 @@ public abstract class AllocationRow {
             each.setTemporal(modification.getBeingModified());
             setCustomAssignedEffortForResource(rows, requestedToRemove);
 
-            int repetitions = Math.max(task.getRecurrenceInformation()
-                    .getRepetitions(), 1);
+            int repetitions = 1;
+            if ((task.getRecurrenceInformation() != null)) {
+                repetitions = Math.max(task.getRecurrenceInformation()
+                        .getRepetitions(), 1);
+            }
 
             for (int i = 1; i < repetitions; i++) {
                 ResourcesPerDayModification repetition = each
