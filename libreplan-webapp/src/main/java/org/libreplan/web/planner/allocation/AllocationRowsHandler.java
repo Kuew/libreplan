@@ -182,6 +182,7 @@ public class AllocationRowsHandler {
     }
 
     public List<AllocationRow> getCurrentRows() {
+        // here
         return currentRows;
     }
 
